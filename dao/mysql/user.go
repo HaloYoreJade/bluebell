@@ -4,17 +4,20 @@ import (
 	"bluebell/models"
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 )
 
 // CheckUserExist 检查指定用户名的用户是否存在
-func CheckUserExist(username string) (bool, error) {
+func CheckUserExist(username string) (err error) {
 	sqlStr := `select count(user_id) from user where username=?`
 	var count int
-	err := db.Get(&count, sqlStr, username)
-	if err != nil {
-		return false, err
+	if err := db.Get(&count, sqlStr, username); err != nil {
+		return err
 	}
-	return count > 0, nil
+	if count > 0 {
+		return errors.New("用户已存在")
+	}
+	return
 }
 
 // InsertUser 向数据库中插入新用户

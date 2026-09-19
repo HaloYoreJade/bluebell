@@ -5,6 +5,7 @@ import (
 	"bluebell/dao/mysql"
 	"bluebell/dao/redis"
 	"bluebell/logger"
+	"bluebell/pkg/snowflake"
 	"bluebell/router"
 	"bluebell/settings"
 	"context"
@@ -27,7 +28,7 @@ func main() {
 		return
 	}
 	//2.初始化日志
-	if err := logger.Init(); err != nil {
+	if err := logger.Init(settings.Conf.LogConfig, settings.Conf.Mode); err != nil {
 		fmt.Printf("init logger failed,err:%v\n", err)
 		return
 	}
@@ -50,11 +51,19 @@ func main() {
 		fmt.Printf("init trans failed,err:%v\n", err)
 		return
 	}
+
+	if err := snowflake.Init(
+		viper.GetString("start_time"),
+		viper.GetInt64("machine_id"),
+	); err != nil {
+		fmt.Printf("init snowflake failed,err:%v\n", err)
+		return
+	}
 	//5.注册路由
-	r := router.SetupRouter()
+	r := router.SetupRouter(settings.Conf.Mode)
 	//6.启动服务
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", viper.GetInt("app.port")),
+		Addr:    fmt.Sprintf(":%d", viper.GetInt("port")),
 		Handler: r,
 	}
 
