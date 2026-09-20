@@ -23,7 +23,7 @@ type ResponseData struct {
 func ResponseError(c *gin.Context, code ResCode) {
 	c.JSON(http.StatusOK, &ResponseData{
 		Code: code,
-		Msg:  code.Msg,
+		Msg:  code.Msg(),
 		Data: nil,
 	})
 }
