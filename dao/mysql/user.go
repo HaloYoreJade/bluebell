@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"database/sql"
 	"encoding/hex"
-	"errors"
 )
 
 // CheckUserExist 检查指定用户名的用户是否存在
@@ -32,12 +31,6 @@ func InsertUser(user *models.User) (err error) {
 }
 
 const secret = "xiaohuang"
-
-var (
-	ErrorUserExist         = errors.New("用户已存在")
-	ErrorUserNotExist      = errors.New("用户不存在")
-	ErrorPasswordIncorrect = errors.New("密码错误")
-)
 
 func encryptPassword(oPassword string) string {
 	h := md5.New()
